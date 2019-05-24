@@ -146,7 +146,10 @@ if __name__ == "__main__":
 
     # Create players
     player_1 = players.HumanPlayer("Kevin")
-    player_2 = players.RandomPlayer("Bimbo")
+    #player_1 = players.RandomPlayer("Bimbo")
+    #player_1 = players.GreedyPlayer("Scrooge")
+    #player_2 = players.RandomPlayer("Bimbo")
+    player_2 = players.GreedyPlayer("Scrooge")
     move_1 = 0
     move_2 = 0
 
@@ -224,6 +227,8 @@ if __name__ == "__main__":
             damage_splash_2.text = "{}!".format(damage_1)
             print("Damage to player 1: {}".format(damage_2))
             print("Damage to player 2: {}".format(damage_1))
+            player_1.send_feedback(damage_1)
+            player_2.send_feedback(damage_2)
             move_1 = 0
             move_2 = 0
             damage_show = True
