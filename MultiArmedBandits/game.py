@@ -1,4 +1,6 @@
-import sys, pygame
+import sys
+import pygame
+import players
 
 pygame.init()
 
@@ -105,11 +107,16 @@ class Button:
 
 
 if __name__ == "__main__":
+    # Create players
+    player_1 = players.HumanPlayer()
+    player_2 = players.RandomPlayer()
+
     # Create health bars
     health_1 = HealthBar(1000)
+    health_2 = HealthBar(1000)
 
     # Create buttons
-    button_1 = Button([100, 100, 100, 50], (255, 0, 0), "Test")
+    button_1 = Button([100, 100, 100, 50], (255, 0, 0), "Attack")
 
     last_frame_click = False
     while True:
@@ -119,6 +126,9 @@ if __name__ == "__main__":
                 sys.exit()
 
         # === WORLD MECHANICS ===
+
+        move_1 = player_1.get_move()
+        move_2 = player_2.get_move()
 
         # === USER MECHANICS ===
 
@@ -134,7 +144,7 @@ if __name__ == "__main__":
 
         if mouse_rel:
             if button_1.mouse_over():
-                health_1.change_health(-10)
+                health_1.change_health(-50)
 
         # === DRAW SCREEN ELEMENTS ===
 
@@ -142,7 +152,7 @@ if __name__ == "__main__":
         screen.fill(white)
 
         # health bars
-        health_1.display(screen, [5, 5, 200, 25])
+        health_1.display(screen, [5, 5, 300, 25])
 
         # buttons
         button_1.display(screen, gap=10)
