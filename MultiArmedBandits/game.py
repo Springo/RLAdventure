@@ -5,9 +5,9 @@ import players
 pygame.init()
 
 # Screen settings
-width = 640
-height = 480
-size = width, height
+screen_width = 640
+screen_height = 480
+screen_size = screen_width, screen_height
 
 # Colors
 white = (255, 255, 255)
@@ -15,10 +15,11 @@ black = (0, 0, 0)
 
 # Fonts
 button_font = pygame.font.SysFont("centurygothic", 18)
+hud_font = pygame.font.SysFont("centurygothic", 24)
 
 # Game meta settings
 mouse_rel = False
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(screen_size)
 clock = pygame.time.Clock()
 
 
@@ -29,6 +30,17 @@ def invert(color):
 
 def darken(color):
     return color[0] // 2, color[1] // 2, color[2] // 2
+
+
+# Font display
+def display_text(Surface, text, coords, font="centurygothic", font_size=24, color=black, justification="center"):
+    font_obj = pygame.font.SysFont(font, font_size)
+    text_surface = font_obj.render(text, True, color)
+    if justification == "center":
+        text_rect = text_surface.get_rect(center=(coords[0], coords[1]))
+    else:
+        text_rect = text_surface.get_rect(x=coords[0], y=coords[1])
+    Surface.blit(text_surface, text_rect)
 
 
 # Object classes
@@ -108,8 +120,10 @@ class Button:
 
 if __name__ == "__main__":
     # Create players
-    player_1 = players.HumanPlayer()
-    player_2 = players.RandomPlayer()
+    player_1 = players.HumanPlayer("Kevin")
+    player_2 = players.RandomPlayer("Bimbo")
+    move_1 = 0
+    move_2 = 0
 
     # Create health bars
     health_1 = HealthBar(1000)
@@ -117,6 +131,17 @@ if __name__ == "__main__":
 
     # Create buttons
     button_1 = Button([100, 100, 100, 50], (255, 0, 0), "Attack")
+    p1_button_color = (200, 200, 200)
+    if isinstance(player_1, players.HumanPlayer):
+        p1_button_color = (255, 0, 0)
+    p2_button_color = (200, 200, 200)
+    if isinstance(player_2, players.HumanPlayer):
+        p2_button_color = (255, 0, 0)
+
+    p1_attack_buttons = [Button([(i + 1) * (screen_width // 7) - 25, screen_height - 150, 50, 50], p1_button_color) for
+                         i in range(6)]
+    p2_attack_buttons = [Button([(i + 1) * (screen_width // 7) - 25, 100, 50, 50], p2_button_color) for
+                         i in range(6)]
 
     last_frame_click = False
     while True:
@@ -127,8 +152,10 @@ if __name__ == "__main__":
 
         # === WORLD MECHANICS ===
 
-        move_1 = player_1.get_move()
-        move_2 = player_2.get_move()
+        if move_1 == 0:
+            move_1 = player_1.get_move()
+        if move_2 == 0:
+            move_2 = player_2.get_move()
 
         # === USER MECHANICS ===
 
@@ -151,11 +178,19 @@ if __name__ == "__main__":
         # background
         screen.fill(white)
 
+        # text
+        display_text(screen, "Player 2: {}".format(player_2.name), (8, 5), font_size=24, justification="corner")
+        display_text(screen, "Player 1: {}".format(player_1.name), (8, screen_height - 60), justification="corner")
+
         # health bars
-        health_1.display(screen, [5, 5, 300, 25])
+        health_2.display(screen, [5, 35, screen_width - 10, 25])
+        health_1.display(screen, [5, screen_height - 30, screen_width - 10, 25])
 
         # buttons
-        button_1.display(screen, gap=10)
+        for button in p1_attack_buttons:
+            button.display(screen)
+        for button in p2_attack_buttons:
+            button.display(screen)
 
         # display results
         pygame.display.flip()

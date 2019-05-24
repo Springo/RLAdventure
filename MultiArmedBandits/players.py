@@ -1,8 +1,8 @@
 import random
 
 class Player:
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self.name = name
 
     def get_move(self):
         return 0
@@ -12,8 +12,8 @@ class Player:
 
 
 class HumanPlayer(Player):
-    def __init__(self):
-        Player.__init__(self)
+    def __init__(self, name):
+        Player.__init__(self, name)
         self.move = 0
 
     def get_move(self):
@@ -24,8 +24,8 @@ class HumanPlayer(Player):
 
 
 class RandomPlayer(Player):
-    def __init__(self):
-        Player.__init__(self)
+    def __init__(self, name):
+        Player.__init__(self, name)
 
     def get_move(self):
         return random.randint(1, 6)
