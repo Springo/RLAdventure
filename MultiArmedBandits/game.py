@@ -129,6 +129,10 @@ if __name__ == "__main__":
     health_1 = HealthBar(1000)
     health_2 = HealthBar(1000)
 
+    # Create battle text
+    battle_text_1 = "Waiting for {} to make a move...".format(player_1.name)
+    battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
+
     # Create buttons
     button_1 = Button([100, 100, 100, 50], (255, 0, 0), "Attack")
     p1_button_color = (200, 200, 200)
@@ -154,8 +158,20 @@ if __name__ == "__main__":
 
         if move_1 == 0:
             move_1 = player_1.get_move()
+            if move_1 != 0:
+                battle_text_1 = "{} has used weapon {}".format(player_1.name, move_1)
         if move_2 == 0:
             move_2 = player_2.get_move()
+            if move_2 != 0:
+                battle_text_2 = "{} has used weapon {}".format(player_2.name, move_2)
+
+        if move_1 != 0 and move_2 != 0:
+            print("Moves have been made: {} {}".format(move_1, move_2))
+            move_1 = 0
+            move_2 = 0
+            battle_text_1 = "Waiting for {} to make a move...".format(player_1.name)
+            battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
+
 
         # === USER MECHANICS ===
 
@@ -170,8 +186,12 @@ if __name__ == "__main__":
             mouse_rel = True
 
         if mouse_rel:
-            if button_1.mouse_over():
-                health_1.change_health(-50)
+            for i in range(len(p1_attack_buttons)):
+                if p1_attack_buttons[i].mouse_over():
+                    player_1.send_move(i + 1)
+            for i in range(len(p2_attack_buttons)):
+                if p2_attack_buttons[i].mouse_over():
+                    player_2.send_move(i + 1)
 
         # === DRAW SCREEN ELEMENTS ===
 
@@ -181,6 +201,8 @@ if __name__ == "__main__":
         # text
         display_text(screen, "Player 2: {}".format(player_2.name), (8, 5), font_size=24, justification="corner")
         display_text(screen, "Player 1: {}".format(player_1.name), (8, screen_height - 60), justification="corner")
+        display_text(screen, battle_text_2, (screen_width // 2, 75), font_size=24)
+        display_text(screen, battle_text_1, (screen_width // 2, screen_height - 75), font_size=24)
 
         # health bars
         health_2.display(screen, [5, 35, screen_width - 10, 25])

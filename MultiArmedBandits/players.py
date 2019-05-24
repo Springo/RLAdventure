@@ -17,7 +17,9 @@ class HumanPlayer(Player):
         self.move = 0
 
     def get_move(self):
-        return self.move
+        move = self.move
+        self.move = 0
+        return move
 
     def send_move(self, move):
         self.move = move
