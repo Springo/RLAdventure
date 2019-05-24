@@ -142,6 +142,7 @@ if __name__ == "__main__":
     # Create meta information
     battle_timer = 0
     damage_show = False
+    game_over = False
 
     # Create players
     player_1 = players.HumanPlayer("Kevin")
@@ -162,9 +163,10 @@ if __name__ == "__main__":
     health_1 = HealthBar(1000)
     health_2 = HealthBar(1000)
 
-    # Create battle text
+    # Create texts
     battle_text_1 = "Waiting for {} to make a move...".format(player_1.name)
     battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
+    center_text = ""
 
     # Create damage splashes
     damage_splash_1 = DamageSplash([screen_width // 2 - 50, screen_height - 210, 100, 50])
@@ -195,22 +197,27 @@ if __name__ == "__main__":
 
         # === WORLD MECHANICS ===
 
-        if move_1 == 0:
-            move_1 = player_1.get_move()
-        if move_2 == 0:
-            move_2 = player_2.get_move()
-        if move_1 != 0 and battle_timer <= 0:
-            battle_text_1 = "{} has chosen Weapon {}".format(player_1.name, move_1)
-        if move_2 != 0 and battle_timer <= 0:
-            battle_text_2 = "{} has chosen Weapon {}".format(player_2.name, move_2)
+        if not game_over:
+            if move_1 == 0:
+                move_1 = player_1.get_move()
+            if move_2 == 0:
+                move_2 = player_2.get_move()
+            if move_1 != 0 and battle_timer <= 0:
+                battle_text_1 = "{} has chosen Weapon {}".format(player_1.name, move_1)
+            if move_2 != 0 and battle_timer <= 0:
+                battle_text_2 = "{} has chosen Weapon {}".format(player_2.name, move_2)
+
+        if game_over:
+            battle_text_1 = ""
+            battle_text_2 = ""
 
         if move_1 != 0 and move_2 != 0:
             battle_timer = 30
             battle_text_1 = "{} has used Weapon {}!".format(player_1.name, move_1)
             battle_text_2 = "{} has used Weapon {}!".format(player_2.name, move_2)
             print("Moves have been made: {} {}".format(move_1, move_2))
-            damage_1 = round(max(0.0, p1_weapons[move_1 - 1] + random.gauss(0, 2)))
-            damage_2 = round(max(0.0, p2_weapons[move_2 - 1] + random.gauss(0, 2)))
+            damage_1 = round(max(0.0, p1_weapons[move_1 - 1] + random.gauss(0, 3)))
+            damage_2 = round(max(0.0, p2_weapons[move_2 - 1] + random.gauss(0, 3)))
             health_2.change_health(-damage_1)
             health_1.change_health(-damage_2)
             damage_splash_1.text = "{}!".format(damage_2)
@@ -228,6 +235,16 @@ if __name__ == "__main__":
                 battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
             damage_show = False
 
+        if health_1.get_health() <= 0 and health_2.get_health() > 0:
+            game_over = True
+            center_text = "{} wins!!!".format(player_2.name)
+        elif health_2.get_health() <= 0 and health_1.get_health() > 0:
+            game_over = True
+            center_text = "{} wins!!!".format(player_1.name)
+        elif health_1.get_health() <= 0 and health_2.get_health() <= 0:
+            game_over = True
+            center_text = "It's a tie!"
+
 
         # === USER MECHANICS ===
 
@@ -242,12 +259,13 @@ if __name__ == "__main__":
             mouse_rel = True
 
         if mouse_rel:
-            for i in range(len(p1_attack_buttons)):
-                if p1_attack_buttons[i].mouse_over():
-                    player_1.send_move(i + 1)
-            for i in range(len(p2_attack_buttons)):
-                if p2_attack_buttons[i].mouse_over():
-                    player_2.send_move(i + 1)
+            if not game_over:
+                for i in range(len(p1_attack_buttons)):
+                    if p1_attack_buttons[i].mouse_over():
+                        player_1.send_move(i + 1)
+                for i in range(len(p2_attack_buttons)):
+                    if p2_attack_buttons[i].mouse_over():
+                        player_2.send_move(i + 1)
 
         # === DRAW SCREEN ELEMENTS ===
 
@@ -274,6 +292,10 @@ if __name__ == "__main__":
             button.display(screen)
         for button in p2_attack_buttons:
             button.display(screen)
+
+        # end text
+        if game_over:
+            display_text(screen, center_text, (screen_width // 2, screen_height // 2), font_size=48)
 
         # display results
         pygame.display.flip()
