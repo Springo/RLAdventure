@@ -1,4 +1,5 @@
 import sys
+import random
 import pygame
 import players
 
@@ -119,11 +120,23 @@ class Button:
 
 
 if __name__ == "__main__":
+    # Create meta information
+    battle_timer = 0
+
     # Create players
     player_1 = players.HumanPlayer("Kevin")
     player_2 = players.RandomPlayer("Bimbo")
     move_1 = 0
     move_2 = 0
+
+    # Create weapons
+    weapon_damages = [random.uniform(5, 15) for _ in range(6)]
+    p1_weapons = weapon_damages[:]
+    random.shuffle(p1_weapons)
+    p2_weapons = weapon_damages[:]
+    random.shuffle(p2_weapons)
+    print(p1_weapons)
+    print(p2_weapons)
 
     # Create health bars
     health_1 = HealthBar(1000)
@@ -147,6 +160,7 @@ if __name__ == "__main__":
     p2_attack_buttons = [Button([(i + 1) * (screen_width // 7) - 25, 100, 50, 50], p2_button_color) for
                          i in range(6)]
 
+    # Begin game loop
     last_frame_click = False
     while True:
         # Check if exited
@@ -159,18 +173,29 @@ if __name__ == "__main__":
         if move_1 == 0:
             move_1 = player_1.get_move()
             if move_1 != 0:
-                battle_text_1 = "{} has used weapon {}".format(player_1.name, move_1)
+                battle_text_1 = "{} has used Weapon {}".format(player_1.name, move_1)
         if move_2 == 0:
             move_2 = player_2.get_move()
             if move_2 != 0:
-                battle_text_2 = "{} has used weapon {}".format(player_2.name, move_2)
+                battle_text_2 = "{} has used Weapon {}".format(player_2.name, move_2)
 
         if move_1 != 0 and move_2 != 0:
+            battle_timer = 30
             print("Moves have been made: {} {}".format(move_1, move_2))
+            damage_1 = round(max(0.0, p1_weapons[move_1 - 1] + random.gauss(0, 2)))
+            damage_2 = round(max(0.0, p2_weapons[move_1 - 1] + random.gauss(0, 2)))
+            health_2.change_health(-damage_1)
+            health_1.change_health(-damage_2)
+            print("Damage to player 1: {}".format(damage_2))
+            print("Damage to player 2: {}".format(damage_1))
             move_1 = 0
             move_2 = 0
-            battle_text_1 = "Waiting for {} to make a move...".format(player_1.name)
-            battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
+
+        if battle_timer == 1:
+            if move_1 == 0:
+                battle_text_1 = "Waiting for {} to make a move...".format(player_1.name)
+            if move_2 == 0:
+                battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
 
 
         # === USER MECHANICS ===
@@ -216,4 +241,8 @@ if __name__ == "__main__":
 
         # display results
         pygame.display.flip()
+
+        # pass time
         clock.tick(30)
+        if battle_timer > 0:
+            battle_timer -= 1
