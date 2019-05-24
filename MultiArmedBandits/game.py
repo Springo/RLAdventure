@@ -16,6 +16,7 @@ black = (0, 0, 0)
 
 # Fonts
 button_font = pygame.font.SysFont("centurygothic", 18)
+damage_font = pygame.font.SysFont("centurygothic", 24, bold=True)
 hud_font = pygame.font.SysFont("centurygothic", 24)
 
 # Game meta settings
@@ -119,9 +120,28 @@ class Button:
             screen.blit(text_surface, text_rect)
 
 
+class DamageSplash:
+    def __init__(self, Rect, text=None):
+        self.bounds = Rect
+        self.x = Rect[0]
+        self.y = Rect[1]
+        self.width = Rect[2]
+        self.height = Rect[3]
+        self.text = text
+
+    def display(self, Surface):
+        pygame.draw.ellipse(Surface, (255, 255, 0), self.bounds, 0)
+        pygame.draw.ellipse(Surface, (255, 0, 0), self.bounds, 1)
+        if self.text is not None:
+            text_surface = damage_font.render(self.text, True, (255, 0, 0))
+            text_rect = text_surface.get_rect(center=(self.x + (self.width // 2), self.y + (self.height // 2)))
+            screen.blit(text_surface, text_rect)
+
+
 if __name__ == "__main__":
     # Create meta information
     battle_timer = 0
+    damage_show = False
 
     # Create players
     player_1 = players.HumanPlayer("Kevin")
@@ -145,6 +165,11 @@ if __name__ == "__main__":
     # Create battle text
     battle_text_1 = "Waiting for {} to make a move...".format(player_1.name)
     battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
+
+    # Create damage splashes
+    damage_splash_1 = DamageSplash([screen_width // 2 - 50, screen_height - 210, 100, 50])
+    damage_splash_2 = DamageSplash([screen_width // 2 - 50, 160, 100, 50])
+
 
     # Create buttons
     button_1 = Button([100, 100, 100, 50], (255, 0, 0), "Attack")
@@ -172,30 +197,36 @@ if __name__ == "__main__":
 
         if move_1 == 0:
             move_1 = player_1.get_move()
-            if move_1 != 0:
-                battle_text_1 = "{} has used Weapon {}".format(player_1.name, move_1)
         if move_2 == 0:
             move_2 = player_2.get_move()
-            if move_2 != 0:
-                battle_text_2 = "{} has used Weapon {}".format(player_2.name, move_2)
+        if move_1 != 0 and battle_timer <= 0:
+            battle_text_1 = "{} has chosen Weapon {}".format(player_1.name, move_1)
+        if move_2 != 0 and battle_timer <= 0:
+            battle_text_2 = "{} has chosen Weapon {}".format(player_2.name, move_2)
 
         if move_1 != 0 and move_2 != 0:
             battle_timer = 30
+            battle_text_1 = "{} has used Weapon {}!".format(player_1.name, move_1)
+            battle_text_2 = "{} has used Weapon {}!".format(player_2.name, move_2)
             print("Moves have been made: {} {}".format(move_1, move_2))
             damage_1 = round(max(0.0, p1_weapons[move_1 - 1] + random.gauss(0, 2)))
-            damage_2 = round(max(0.0, p2_weapons[move_1 - 1] + random.gauss(0, 2)))
+            damage_2 = round(max(0.0, p2_weapons[move_2 - 1] + random.gauss(0, 2)))
             health_2.change_health(-damage_1)
             health_1.change_health(-damage_2)
+            damage_splash_1.text = "{}!".format(damage_2)
+            damage_splash_2.text = "{}!".format(damage_1)
             print("Damage to player 1: {}".format(damage_2))
             print("Damage to player 2: {}".format(damage_1))
             move_1 = 0
             move_2 = 0
+            damage_show = True
 
         if battle_timer == 1:
             if move_1 == 0:
                 battle_text_1 = "Waiting for {} to make a move...".format(player_1.name)
             if move_2 == 0:
                 battle_text_2 = "Waiting for {} to make a move...".format(player_2.name)
+            damage_show = False
 
 
         # === USER MECHANICS ===
@@ -228,6 +259,11 @@ if __name__ == "__main__":
         display_text(screen, "Player 1: {}".format(player_1.name), (8, screen_height - 60), justification="corner")
         display_text(screen, battle_text_2, (screen_width // 2, 75), font_size=24)
         display_text(screen, battle_text_1, (screen_width // 2, screen_height - 75), font_size=24)
+
+        # damage_splashes
+        if damage_show:
+            damage_splash_1.display(screen)
+            damage_splash_2.display(screen)
 
         # health bars
         health_2.display(screen, [5, 35, screen_width - 10, 25])
