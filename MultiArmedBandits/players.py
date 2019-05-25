@@ -38,21 +38,26 @@ class RandomPlayer(Player):
 
 
 class GreedyPlayer(Player):
-    def __init__(self, name):
+    def __init__(self, name, epsilon=0):
         Player.__init__(self, name)
+        self.epsilon = epsilon
         self.estimates = [0] * 6
         self.counts = [0] * 6
 
     def get_move(self):
-        best_move = 0
-        for i in range(len(self.estimates)):
-            if self.counts[i] == 0:
-                self.move = i + 1
-                return self.move
+        roll = random.random()
+        if roll < self.epsilon:
+            self.move = random.randint(1, 6)
+        else:
+            best_move = 0
+            for i in range(len(self.estimates)):
+                if self.counts[i] == 0:
+                    self.move = i + 1
+                    return self.move
 
-            if self.estimates[i] > self.estimates[best_move]:
-                best_move = i
-        self.move = best_move + 1
+                if self.estimates[i] > self.estimates[best_move]:
+                    best_move = i
+            self.move = best_move + 1
         return self.move
 
     def send_feedback(self, result):
