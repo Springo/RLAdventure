@@ -24,6 +24,13 @@ mouse_rel = False
 screen = pygame.display.set_mode(screen_size)
 clock = pygame.time.Clock()
 
+# Images
+weapon_image_dir = ["sword.png", "axe.png", "bow.png", "wand.png", "bomb.png", "poison.png"]
+weapon_images = []
+for img in weapon_image_dir:
+    weapon_images.append(pygame.image.load("sprites/{}".format(img)).convert_alpha())
+weapon_names = ["Sword", "Axe", "Bow", "Wand", "Bomb", "Poison"]
+
 
 # Color transformations
 def invert(color):
@@ -72,7 +79,7 @@ class HealthBar:
 
 
 class Button:
-    def __init__(self, Rect, color, text=None):
+    def __init__(self, Rect, color, text=None, image=None):
         self.bounds = Rect
         self.x = Rect[0]
         self.y = Rect[1]
@@ -80,6 +87,7 @@ class Button:
         self.height = Rect[3]
         self.color = color
         self.text = text
+        self.image = image
 
     def mouse_over(self):
         mouse = pygame.mouse.get_pos()
@@ -114,6 +122,10 @@ class Button:
         pygame.draw.line(Surface, black, (self.x + self.width, self.y + self.height),
                          (self.x + self.width - gap, self.y + self.height - gap))
 
+        if self.image is not None:
+            image_rect = self.image.get_rect(center=(self.x + (self.width // 2), self.y + (self.height // 2)))
+            screen.blit(self.image, image_rect)
+
         if self.text is not None:
             text_surface = button_font.render(self.text, True, black)
             text_rect = text_surface.get_rect(center=(self.x + (self.width // 2), self.y + (self.height // 2)))
@@ -145,13 +157,13 @@ if __name__ == "__main__":
     game_over = False
 
     # Create players
-    #player_1 = players.HumanPlayer("Kevin")
-    player_1 = players.RandomPlayer("Bimbo")
+    player_1 = players.HumanPlayer("Kevin")
+    #player_1 = players.RandomPlayer("Bimbo")
     #player_1 = players.GreedyPlayer("Scrooge")
     #player_2 = players.RandomPlayer("Bimbo")
     #player_2 = players.GreedyPlayer("Scrooge")
-    #player_2 = players.GreedyPlayer("Donald", 0.01)
-    player_2 = players.GreedyPlayer("Hillary", 0.1)
+    player_2 = players.GreedyPlayer("Donald", 0.01)
+    #player_2 = players.GreedyPlayer("Hillary", 0.1)
     move_1 = 0
     move_2 = 0
 
@@ -187,10 +199,10 @@ if __name__ == "__main__":
     if isinstance(player_2, players.HumanPlayer):
         p2_button_color = (255, 0, 0)
 
-    p1_attack_buttons = [Button([(i + 1) * (screen_width // 7) - 25, screen_height - 150, 50, 50], p1_button_color) for
-                         i in range(6)]
-    p2_attack_buttons = [Button([(i + 1) * (screen_width // 7) - 25, 100, 50, 50], p2_button_color) for
-                         i in range(6)]
+    p1_attack_buttons = [Button([(i + 1) * (screen_width // 7) - 25, screen_height - 150, 50, 50], p1_button_color,
+                        image=weapon_images[i]) for i in range(6)]
+    p2_attack_buttons = [Button([(i + 1) * (screen_width // 7) - 25, 100, 50, 50], p2_button_color,
+                        image=weapon_images[i]) for i in range(6)]
 
     # Begin game loop
     last_frame_click = False
@@ -208,9 +220,9 @@ if __name__ == "__main__":
             if move_2 == 0:
                 move_2 = player_2.get_move()
             if move_1 != 0 and battle_timer <= 0:
-                battle_text_1 = "{} has chosen Weapon {}".format(player_1.name, move_1)
+                battle_text_1 = "{} has chosen {}".format(player_1.name, weapon_names[move_1 - 1])
             if move_2 != 0 and battle_timer <= 0:
-                battle_text_2 = "{} has chosen Weapon {}".format(player_2.name, move_2)
+                battle_text_2 = "{} has chosen {}".format(player_2.name, weapon_names[move_2 - 1])
 
         if game_over:
             battle_text_1 = ""
@@ -218,8 +230,8 @@ if __name__ == "__main__":
 
         if move_1 != 0 and move_2 != 0:
             battle_timer = 30
-            battle_text_1 = "{} has used Weapon {}!".format(player_1.name, move_1)
-            battle_text_2 = "{} has used Weapon {}!".format(player_2.name, move_2)
+            battle_text_1 = "{} has used {}!".format(player_1.name, weapon_names[move_1 - 1])
+            battle_text_2 = "{} has used {}!".format(player_2.name, weapon_names[move_2 - 1])
             print("Moves have been made: {} {}".format(move_1, move_2))
             damage_1 = round(max(0.0, p1_weapons[move_1 - 1] + random.gauss(0, 3)))
             damage_2 = round(max(0.0, p2_weapons[move_2 - 1] + random.gauss(0, 3)))
