@@ -157,13 +157,14 @@ if __name__ == "__main__":
     game_over = False
 
     # Create players
-    player_1 = players.HumanPlayer("Kevin")
+    #player_1 = players.HumanPlayer("Kevin")
     #player_1 = players.RandomPlayer("Bimbo")
-    #player_1 = players.GreedyPlayer("Scrooge")
+    player_1 = players.GreedyPlayer("Scrooge")
     #player_2 = players.RandomPlayer("Bimbo")
     #player_2 = players.GreedyPlayer("Scrooge")
-    player_2 = players.GreedyPlayer("Donald", 0.01)
+    #player_2 = players.GreedyPlayer("Donald", 0.01)
     #player_2 = players.GreedyPlayer("Hillary", 0.1)
+    player_2 = players.AnnealingGreedyPlayer("Theodore", 2)
     move_1 = 0
     move_2 = 0
 
@@ -173,8 +174,8 @@ if __name__ == "__main__":
     random.shuffle(p1_weapons)
     p2_weapons = weapon_damages[:]
     random.shuffle(p2_weapons)
-    print(p1_weapons)
     print(p2_weapons)
+    print(p1_weapons)
 
     # Create health bars
     health_1 = HealthBar(1000)
@@ -232,15 +233,15 @@ if __name__ == "__main__":
             battle_timer = 30
             battle_text_1 = "{} has used {}!".format(player_1.name, weapon_names[move_1 - 1])
             battle_text_2 = "{} has used {}!".format(player_2.name, weapon_names[move_2 - 1])
-            print("Moves have been made: {} {}".format(move_1, move_2))
+            #print("Moves have been made: {} {}".format(move_1, move_2))
             damage_1 = round(max(0.0, p1_weapons[move_1 - 1] + random.gauss(0, 3)))
             damage_2 = round(max(0.0, p2_weapons[move_2 - 1] + random.gauss(0, 3)))
             health_2.change_health(-damage_1)
             health_1.change_health(-damage_2)
             damage_splash_1.text = "{}!".format(damage_2)
             damage_splash_2.text = "{}!".format(damage_1)
-            print("Damage to player 1: {}".format(damage_2))
-            print("Damage to player 2: {}".format(damage_1))
+            #print("Damage to player 1: {}".format(damage_2))
+            #print("Damage to player 2: {}".format(damage_1))
             player_1.send_feedback(damage_1)
             player_2.send_feedback(damage_2)
             move_1 = 0
