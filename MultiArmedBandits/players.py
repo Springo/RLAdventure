@@ -100,3 +100,34 @@ class AnnealingGreedyPlayer(Player):
         self.estimates[move_ind] = (total_damage + result) / self.counts[move_ind]
         self.total += 1
         self.epsilon = 1.0 / (math.log2(self.total + 1) ** self.decrease_rate)
+
+
+class UCBPlayer(Player):
+    def __init__(self, name, conf=1):
+        Player.__init__(self, name)
+        self.estimates = [0] * 6
+        self.counts = [0] * 6
+        self.total = 0
+        self.conf = conf
+
+    def get_move(self):
+        best_move = 0
+        best_est = 0
+        for i in range(len(self.estimates)):
+            if self.counts[i] == 0:
+                self.move = i + 1
+                return self.move
+
+            cur_est = self.estimates[i] + self.conf * (math.log(self.total + 1) / self.counts[i])
+            if cur_est > best_est:
+                best_move = i
+                best_est = cur_est
+        self.move = best_move + 1
+        return self.move
+
+    def send_feedback(self, result):
+        move_ind = self.move - 1
+        total_damage = self.estimates[move_ind] * self.counts[move_ind]
+        self.counts[move_ind] += 1
+        self.estimates[move_ind] = (total_damage + result) / self.counts[move_ind]
+        self.total += 1

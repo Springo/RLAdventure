@@ -159,12 +159,14 @@ if __name__ == "__main__":
     # Create players
     #player_1 = players.HumanPlayer("Kevin")
     #player_1 = players.RandomPlayer("Bimbo")
-    player_1 = players.GreedyPlayer("Scrooge")
+    #player_1 = players.GreedyPlayer("Scrooge")
+    player_1 = players.AnnealingGreedyPlayer("Theodore", 2)
     #player_2 = players.RandomPlayer("Bimbo")
     #player_2 = players.GreedyPlayer("Scrooge")
     #player_2 = players.GreedyPlayer("Donald", 0.01)
     #player_2 = players.GreedyPlayer("Hillary", 0.1)
-    player_2 = players.AnnealingGreedyPlayer("Theodore", 2)
+    #player_2 = players.AnnealingGreedyPlayer("Theodore", 2)
+    player_2 = players.UCBPlayer("Ellen", 1)
     move_1 = 0
     move_2 = 0
 
