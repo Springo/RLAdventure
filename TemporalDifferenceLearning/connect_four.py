@@ -59,6 +59,85 @@ class Board:
         self.heights[move] -= 1
         return 0
 
+    def check_win(self, player, move):
+        if (player != 1 and player != 2) or (move < 0 or move > 6) or (self.heights[move] + 1 < 0):
+            return False
+
+        y = self.heights[move] + 1
+
+        # check horizontal
+        counter = 1
+        for i in range(3):
+            if move + i + 1 > 6:
+                break
+            if self.grid[y][move + i + 1] == player:
+                counter += 1
+            else:
+                break
+        for i in range(3):
+            if move - i - 1 < 0:
+                break
+            if self.grid[y][move - i - 1] == player:
+                counter += 1
+            else:
+                break
+        if counter >= 4:
+            return True
+
+        # check vertical
+        counter = 1
+        if y <= 2:
+            for j in range(3):
+                if self.grid[y + j + 1][move] == player:
+                    counter += 1
+        if counter >= 4:
+            return True
+
+        # check diagonals:
+        counter = 1
+        for i in range(3):
+            if move + i + 1 > 6 or y + i + 1 > 5:
+                break
+            if self.grid[y + i + 1][move + i + 1] == player:
+                counter += 1
+            else:
+                break
+        for i in range(3):
+            if move - i - 1 < 0 or y - i - 1 < 0:
+                break
+            if self.grid[y - i - 1][move - i - 1] == player:
+                counter += 1
+            else:
+                break
+        if counter >= 4:
+            return True
+
+        counter = 1
+        for i in range(3):
+            if move + i + 1 > 6 or y - i - 1 < 0:
+                break
+            if self.grid[y - i - 1][move + i + 1] == player:
+                counter += 1
+            else:
+                break
+        for i in range(3):
+            if move - i - 1 < 0 or y + i + 1 > 5:
+                break
+            if self.grid[y + i + 1][move - i - 1] == player:
+                counter += 1
+            else:
+                break
+        if counter >= 4:
+            return True
+
+        return False
+
+    def check_tie(self):
+        for i in range(len(self.heights)):
+            if self.heights[i] >= 0:
+                return False
+        return True
+
     def mouse_over(self, Rect):
         mouse = pygame.mouse.get_pos()
         if Rect[0] < mouse[0] < Rect[0] + Rect[2] and Rect[1] < mouse[1] < Rect[1] + Rect[3]:
@@ -105,6 +184,7 @@ if __name__ == "__main__":
     # Create meta information
     game_over = False
     turn = 1
+    move = -1
 
     # Create board
     board = Board()
@@ -136,11 +216,24 @@ if __name__ == "__main__":
         if move != -1:
             check = board.input_move(turn, move)
             if check == 0:
-                turn = 3 - turn
-                if turn == 1:
-                    game_text = "{} to move.".format(player_1.name)
-                elif turn == 2:
-                    game_text = "{} to move.".format(player_2.name)
+                win = board.check_win(turn, move)
+                tie = board.check_tie()
+                if win:
+                    game_over = True
+                    if turn == 1:
+                        game_text = "{} wins!!!".format(player_1.name)
+                    elif turn == 2:
+                        game_text = "{} wins!!!".format(player_2.name)
+                elif tie:
+                    game_over = True
+                    game_text = "Draw!"
+                else:
+                    turn = 3 - turn
+                    if turn == 1:
+                        game_text = "{} to move.".format(player_1.name)
+                    elif turn == 2:
+                        game_text = "{} to move.".format(player_2.name)
+            move = -1
 
         # === USER MECHANICS ===
 

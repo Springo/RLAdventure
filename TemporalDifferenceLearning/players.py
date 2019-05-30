@@ -26,3 +26,11 @@ class HumanPlayer(Player):
     def send_move(self, move):
         self.move = move
 
+
+class RandomPlayer(Player):
+    def __init__(self, name):
+        Player.__init__(self, name)
+
+    def get_move(self):
+        self.move = random.randint(0, 6)
+        return self.move
