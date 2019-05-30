@@ -1,6 +1,7 @@
 import sys
 import random
 import pygame
+import players
 
 pygame.init()
 
@@ -103,10 +104,18 @@ class Board:
 if __name__ == "__main__":
     # Create meta information
     game_over = False
+    turn = 1
 
     # Create board
     board = Board()
     board_dim = [0, 100, screen_width, screen_height - 100]
+
+    # Create players
+    player_1 = players.HumanPlayer("Kevin")
+    player_2 = players.HumanPlayer("Bob")
+
+    # Create texts
+    game_text = "{} to move.".format(player_1.name)
 
     # Begin game loop
     last_frame_click = False
@@ -117,6 +126,21 @@ if __name__ == "__main__":
                 sys.exit()
 
         # === WORLD MECHANICS ===
+
+        if not game_over:
+            if turn == 1:
+                move = player_1.get_move()
+            elif turn == 2:
+                move = player_2.get_move()
+
+        if move != -1:
+            check = board.input_move(turn, move)
+            if check == 0:
+                turn = 3 - turn
+                if turn == 1:
+                    game_text = "{} to move.".format(player_1.name)
+                elif turn == 2:
+                    game_text = "{} to move.".format(player_2.name)
 
         # === USER MECHANICS ===
 
@@ -132,7 +156,12 @@ if __name__ == "__main__":
 
         if mouse_rel:
             if not game_over:
-                print(board.check_mouse_over(board_dim))
+                board_click = board.check_mouse_over(board_dim)
+                if board_click != -1:
+                    if turn == 1:
+                        player_1.send_move(board_click)
+                    elif turn == 2:
+                        player_2.send_move(board_click)
 
         # === DRAW SCREEN ELEMENTS ===
 
@@ -141,6 +170,10 @@ if __name__ == "__main__":
 
         # board
         board.display(screen, board_dim)
+
+        # text
+        display_text(screen, game_text, (screen_width // 2, 50), font="centurygothic", font_size=24, color=black,
+                         justification="center")
 
         # display results
         pygame.display.flip()

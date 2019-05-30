@@ -5,10 +5,10 @@ import math
 class Player:
     def __init__(self, name):
         self.name = name
-        self.move = 0
+        self.move = -1
 
     def get_move(self):
-        return 0
+        return -1
 
     def send_move(self, move):
         pass
@@ -20,7 +20,7 @@ class HumanPlayer(Player):
 
     def get_move(self):
         move = self.move
-        self.move = 0
+        self.move = -1
         return move
 
     def send_move(self, move):
