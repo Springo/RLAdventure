@@ -106,6 +106,7 @@ if __name__ == "__main__":
 
     # Create board
     board = Board()
+    board_dim = [0, 100, screen_width, screen_height - 100]
 
     # Begin game loop
     last_frame_click = False
@@ -129,13 +130,17 @@ if __name__ == "__main__":
             last_frame_click = False
             mouse_rel = True
 
+        if mouse_rel:
+            if not game_over:
+                print(board.check_mouse_over(board_dim))
+
         # === DRAW SCREEN ELEMENTS ===
 
         # background
         screen.fill(white)
 
         # board
-        board.display(screen, [0, 100, screen_width, screen_height - 100])
+        board.display(screen, board_dim)
 
         # display results
         pygame.display.flip()
