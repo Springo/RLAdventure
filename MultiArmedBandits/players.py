@@ -15,6 +15,9 @@ class Player:
     def send_feedback(self, result):
         pass
 
+    def reset_memory(self):
+        self.move = 0
+
 
 class HumanPlayer(Player):
     def __init__(self, name):
@@ -67,6 +70,10 @@ class GreedyPlayer(Player):
         self.counts[move_ind] += 1
         self.estimates[move_ind] = (total_damage + result) / self.counts[move_ind]
 
+    def reset_memory(self):
+        self.estimates = [0] * 6
+        self.counts = [0] * 6
+
 
 class AnnealingGreedyPlayer(Player):
     def __init__(self, name, decrease_rate=1):
@@ -101,6 +108,12 @@ class AnnealingGreedyPlayer(Player):
         self.total += 1
         self.epsilon = 1.0 / (math.log2(self.total + 1) ** self.decrease_rate)
 
+    def reset_memory(self):
+        self.epsilon = 1.0
+        self.estimates = [0] * 6
+        self.counts = [0] * 6
+        self.total = 0
+
 
 class UCBPlayer(Player):
     def __init__(self, name, conf=1):
@@ -131,3 +144,8 @@ class UCBPlayer(Player):
         self.counts[move_ind] += 1
         self.estimates[move_ind] = (total_damage + result) / self.counts[move_ind]
         self.total += 1
+
+    def reset_memory(self):
+        self.estimates = [0] * 6
+        self.counts = [0] * 6
+        self.total = 0
