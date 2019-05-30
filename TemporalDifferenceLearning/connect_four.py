@@ -49,6 +49,14 @@ def display_text(Surface, text, coords, font="centurygothic", font_size=24, colo
 class Board:
     def __init__(self):
         self.grid = [[0] * 7 for _ in range(6)]
+        self.heights = [5] * 7
+
+    def input_move(self, player, move):
+        if (player != 1 and player != 2) or (move < 0 or move > 6) or (self.heights[move] < 0):
+            return -1
+        self.grid[self.heights[move]][move] = player
+        self.heights[move] -= 1
+        return 0
 
     def display(self, Surface, Rect):
         pygame.draw.rect(Surface, (0, 0, 150), Rect, 0)

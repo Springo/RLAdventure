@@ -300,7 +300,7 @@ if __name__ == "__main__":
         display_text(screen, battle_text_2, (screen_width // 2, 75), font_size=24)
         display_text(screen, battle_text_1, (screen_width // 2, screen_height - 75), font_size=24)
 
-        # damage_splashes
+        # damage splashes
         if damage_show:
             damage_splash_1.display(screen)
             damage_splash_2.display(screen)
