@@ -58,6 +58,21 @@ class Board:
         self.heights[move] -= 1
         return 0
 
+    def mouse_over(self, Rect):
+        mouse = pygame.mouse.get_pos()
+        if Rect[0] < mouse[0] < Rect[0] + Rect[2] and Rect[1] < mouse[1] < Rect[1] + Rect[3]:
+            return True
+        return False
+
+    def check_mouse_over(self, Rect):
+        spacing_x = Rect[2] / 8.0
+        for j in range(len(self.grid[0])):
+            center_x = Rect[0] + int(spacing_x * (j + 1))
+            column_rect = [int(center_x - (spacing_x / 2.0)), Rect[1], spacing_x, Rect[3]]
+            if self.mouse_over(column_rect):
+                return j
+        return -1
+
     def display(self, Surface, Rect):
         pygame.draw.rect(Surface, (0, 0, 150), Rect, 0)
         spacing_x = Rect[2] / 8.0
@@ -74,6 +89,15 @@ class Board:
                     Surface.blit(yellow_disc_image, image_rect)
                 else:
                     pygame.draw.circle(Surface, white, center_loc, 32)
+
+        for j in range(len(self.grid[0])):
+            center_x = Rect[0] + int(spacing_x * (j + 1))
+            column_rect = [int(center_x - (spacing_x / 2.0)), Rect[1], spacing_x, Rect[3]]
+            if self.mouse_over(column_rect):
+                s = pygame.Surface((column_rect[2], column_rect[3]))
+                s.set_alpha(128)
+                s.fill((255, 255, 255))
+                Surface.blit(s, (column_rect[0], column_rect[1]))
 
 
 if __name__ == "__main__":
