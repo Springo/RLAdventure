@@ -130,7 +130,7 @@ class MinimaxPlayer(Player):
         self.board = board
 
     def get_move(self):
-        best_move_score, move_scores = self.minimax(self.player, self.board, self.depth, True)
+        best_move_score, move_scores = self.minimax(self.player, self.board, self.depth, True, -1000, 1000, force_all=True)
         print(self.player)
         print(move_scores)
 
@@ -142,8 +142,11 @@ class MinimaxPlayer(Player):
         choice = random.randint(0, len(available_moves) - 1)
         return available_moves[choice]
 
-    def minimax(self, player, board, depth, maximize):
-        move_scores = [0] * 7
+    def minimax(self, player, board, depth, maximize, alpha, beta, force_all=False):
+        if maximize:
+            move_scores = [-1000] * 7
+        else:
+            move_scores = [1000] * 7
         for move in range(7):
             win, invalid = check_win(player, board, move)
             if invalid:
@@ -155,19 +158,47 @@ class MinimaxPlayer(Player):
                 if win:
                     if maximize:
                         move_scores[move] = 1
+                        if not force_all:
+                            alpha = max(alpha, 1)
+                            if alpha >= beta:
+                                return 1, move_scores
                     else:
                         move_scores[move] = -1
+                        if not force_all:
+                            beta = min(beta, -1)
+                            if alpha >= beta:
+                                return -1, move_scores
                 else:
                     if depth == 0:
                         move_scores[move] = 0
+                        if not force_all:
+                            if maximize:
+                                alpha = max(alpha, 0)
+                                if alpha >= beta:
+                                    return 0, move_scores
+                            else:
+                                beta = min(beta, 0)
+                                if alpha >= beta:
+                                    return 0, move_scores
                     else:
                         new_board = copy.deepcopy(board)
                         for i in range(len(new_board)):
                             if new_board[len(new_board) - i - 1][move] == 0:
                                 new_board[len(new_board) - i - 1][move] = player
                                 break
-                        move_scores[move], _ = self.minimax(3 - player, new_board, depth - 1, not maximize)
-                        move_scores[move] = move_scores[move] * 0.9
+                        result, _ = self.minimax(3 - player, new_board, depth - 1, not maximize, alpha, beta)
+                        result = result * 0.9
+                        move_scores[move] = result
+
+                        if not force_all:
+                            if maximize:
+                                alpha = max(alpha, result)
+                                if alpha >= beta:
+                                    return result, move_scores
+                            else:
+                                beta = min(beta, result)
+                                if alpha >= beta:
+                                    return result, move_scores
 
         if maximize:
             return max(move_scores), move_scores

@@ -191,11 +191,11 @@ if __name__ == "__main__":
     board_dim = [0, 100, screen_width, screen_height - 100]
 
     # Create players
-    #player_1 = players.HumanPlayer("Kevin")
+    player_1 = players.HumanPlayer("Kevin")
     #player_1 = players.RandomPlayer("Bimbo")
-    player_1 = players.MinimaxPlayer("Min", 4)
+    #player_1 = players.MinimaxPlayer("Min", 8)
     #player_2 = players.RandomPlayer("Bimbo")
-    player_2 = players.MinimaxPlayer("Max", 4)
+    player_2 = players.MinimaxPlayer("Max", 8)
 
     # Create texts
     game_text = "{} to move.".format(player_1.name)
