@@ -131,6 +131,8 @@ class MinimaxPlayer(Player):
 
     def get_move(self):
         best_move_score, move_scores = self.minimax(self.player, self.board, self.depth, True)
+        print(self.player)
+        print(move_scores)
 
         available_moves = []
         for move in range(7):
@@ -165,6 +167,7 @@ class MinimaxPlayer(Player):
                                 new_board[len(new_board) - i - 1][move] = player
                                 break
                         move_scores[move], _ = self.minimax(3 - player, new_board, depth - 1, not maximize)
+                        move_scores[move] = move_scores[move] * 0.9
 
         if maximize:
             return max(move_scores), move_scores
