@@ -191,8 +191,11 @@ if __name__ == "__main__":
     board_dim = [0, 100, screen_width, screen_height - 100]
 
     # Create players
-    player_1 = players.HumanPlayer("Kevin")
-    player_2 = players.HumanPlayer("Bob")
+    #player_1 = players.HumanPlayer("Kevin")
+    #player_1 = players.RandomPlayer("Bimbo")
+    player_1 = players.MinimaxPlayer("Min", 4)
+    #player_2 = players.RandomPlayer("Bimbo")
+    player_2 = players.MinimaxPlayer("Max", 4)
 
     # Create texts
     game_text = "{} to move.".format(player_1.name)
@@ -209,8 +212,10 @@ if __name__ == "__main__":
 
         if not game_over:
             if turn == 1:
+                player_1.send_state(1, board.grid)
                 move = player_1.get_move()
             elif turn == 2:
+                player_2.send_state(2, board.grid)
                 move = player_2.get_move()
 
         if move != -1:
