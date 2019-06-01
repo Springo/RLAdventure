@@ -2,6 +2,7 @@ import sys
 import random
 import pygame
 import players
+from connect_four_util import ConnectFourBoard
 
 pygame.init()
 
@@ -49,94 +50,16 @@ def display_text(Surface, text, coords, font="centurygothic", font_size=24, colo
 
 class Board:
     def __init__(self):
-        self.grid = [[0] * 7 for _ in range(6)]
-        self.heights = [5] * 7
+        self.board = ConnectFourBoard()
 
     def input_move(self, player, move):
-        if (player != 1 and player != 2) or (move < 0 or move > 6) or (self.heights[move] < 0):
-            return -1
-        self.grid[self.heights[move]][move] = player
-        self.heights[move] -= 1
-        return 0
+        return self.board.input_move(player, move)
 
     def check_win(self, player, move):
-        if (player != 1 and player != 2) or (move < 0 or move > 6) or (self.heights[move] + 1 < 0):
-            return False
-
-        y = self.heights[move] + 1
-
-        # check horizontal
-        counter = 1
-        for i in range(3):
-            if move + i + 1 > 6:
-                break
-            if self.grid[y][move + i + 1] == player:
-                counter += 1
-            else:
-                break
-        for i in range(3):
-            if move - i - 1 < 0:
-                break
-            if self.grid[y][move - i - 1] == player:
-                counter += 1
-            else:
-                break
-        if counter >= 4:
-            return True
-
-        # check vertical
-        counter = 1
-        if y <= 2:
-            for j in range(3):
-                if self.grid[y + j + 1][move] == player:
-                    counter += 1
-        if counter >= 4:
-            return True
-
-        # check diagonals:
-        counter = 1
-        for i in range(3):
-            if move + i + 1 > 6 or y + i + 1 > 5:
-                break
-            if self.grid[y + i + 1][move + i + 1] == player:
-                counter += 1
-            else:
-                break
-        for i in range(3):
-            if move - i - 1 < 0 or y - i - 1 < 0:
-                break
-            if self.grid[y - i - 1][move - i - 1] == player:
-                counter += 1
-            else:
-                break
-        if counter >= 4:
-            return True
-
-        counter = 1
-        for i in range(3):
-            if move + i + 1 > 6 or y - i - 1 < 0:
-                break
-            if self.grid[y - i - 1][move + i + 1] == player:
-                counter += 1
-            else:
-                break
-        for i in range(3):
-            if move - i - 1 < 0 or y + i + 1 > 5:
-                break
-            if self.grid[y + i + 1][move - i - 1] == player:
-                counter += 1
-            else:
-                break
-        if counter >= 4:
-            return True
-
-        return False
+        return self.board.check_win(player, move)
 
     def check_tie(self):
-        for i in range(len(self.heights)):
-            if self.heights[i] >= 0:
-                return False
-        return True
+        return self.board.check_tie()
 
     def mouse_over(self, Rect):
         mouse = pygame.mouse.get_pos()
@@ -145,8 +68,9 @@ class Board:
         return False
 
     def check_mouse_over(self, Rect):
+        grid = self.board.grid
         spacing_x = Rect[2] / 8.0
-        for j in range(len(self.grid[0])):
+        for j in range(len(grid[0])):
             center_x = Rect[0] + int(spacing_x * (j + 1))
             column_rect = [int(center_x - (spacing_x / 2.0)), Rect[1], spacing_x, Rect[3]]
             if self.mouse_over(column_rect):
@@ -154,23 +78,24 @@ class Board:
         return -1
 
     def display(self, Surface, Rect):
+        grid = self.board.grid
         pygame.draw.rect(Surface, (0, 0, 150), Rect, 0)
         spacing_x = Rect[2] / 8.0
         spacing_y = Rect[3] / 7.0
 
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[i])):
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
                 center_loc = (Rect[0] + int(spacing_x * (j+1)), Rect[1] + int(spacing_y * (i+1)))
-                if self.grid[i][j] == 1:
+                if grid[i][j] == 1:
                     image_rect = red_disc_image.get_rect(center=center_loc)
                     Surface.blit(red_disc_image, image_rect)
-                elif self.grid[i][j] == 2:
+                elif grid[i][j] == 2:
                     image_rect = yellow_disc_image.get_rect(center=center_loc)
                     Surface.blit(yellow_disc_image, image_rect)
                 else:
                     pygame.draw.circle(Surface, white, center_loc, 32)
 
-        for j in range(len(self.grid[0])):
+        for j in range(len(grid[0])):
             center_x = Rect[0] + int(spacing_x * (j + 1))
             column_rect = [int(center_x - (spacing_x / 2.0)), Rect[1], spacing_x, Rect[3]]
             if self.mouse_over(column_rect):
@@ -191,9 +116,9 @@ if __name__ == "__main__":
     board_dim = [0, 100, screen_width, screen_height - 100]
 
     # Create players
-    player_1 = players.HumanPlayer("Kevin")
+    #player_1 = players.HumanPlayer("Melon")
     #player_1 = players.RandomPlayer("Bimbo")
-    #player_1 = players.MinimaxPlayer("Min", 8)
+    player_1 = players.MinimaxPlayer("Min", 8)
     #player_2 = players.RandomPlayer("Bimbo")
     player_2 = players.MinimaxPlayer("Max", 8)
 
@@ -212,16 +137,16 @@ if __name__ == "__main__":
 
         if not game_over:
             if turn == 1:
-                player_1.send_state(1, board.grid)
+                player_1.send_state(1, board.board)
                 move = player_1.get_move()
             elif turn == 2:
-                player_2.send_state(2, board.grid)
+                player_2.send_state(2, board.board)
                 move = player_2.get_move()
 
         if move != -1:
+            win, _ = board.check_win(turn, move)
             check = board.input_move(turn, move)
             if check == 0:
-                win = board.check_win(turn, move)
                 tie = board.check_tie()
                 if win:
                     game_over = True

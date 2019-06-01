@@ -3,84 +3,6 @@ import math
 import copy
 
 
-def check_win(player, grid, move):
-    if (player != 1 and player != 2) or (move < 0 or move > 6) or grid[0][move] != 0:
-        return False, True
-
-    y = -1
-    for i in range(len(grid)):
-        if grid[len(grid) - i - 1][move] == 0:
-            y = len(grid) - i - 1
-            break
-
-    # check horizontal
-    counter = 1
-    for i in range(3):
-        if move + i + 1 > 6:
-            break
-        if grid[y][move + i + 1] == player:
-            counter += 1
-        else:
-            break
-    for i in range(3):
-        if move - i - 1 < 0:
-            break
-        if grid[y][move - i - 1] == player:
-            counter += 1
-        else:
-            break
-    if counter >= 4:
-        return True, False
-
-    # check vertical
-    counter = 1
-    if y <= 2:
-        for j in range(3):
-            if grid[y + j + 1][move] == player:
-                counter += 1
-    if counter >= 4:
-        return True, False
-
-    # check diagonals:
-    counter = 1
-    for i in range(3):
-        if move + i + 1 > 6 or y + i + 1 > 5:
-            break
-        if grid[y + i + 1][move + i + 1] == player:
-            counter += 1
-        else:
-            break
-    for i in range(3):
-        if move - i - 1 < 0 or y - i - 1 < 0:
-            break
-        if grid[y - i - 1][move - i - 1] == player:
-            counter += 1
-        else:
-            break
-    if counter >= 4:
-        return True, False
-
-    counter = 1
-    for i in range(3):
-        if move + i + 1 > 6 or y - i - 1 < 0:
-            break
-        if grid[y - i - 1][move + i + 1] == player:
-            counter += 1
-        else:
-            break
-    for i in range(3):
-        if move - i - 1 < 0 or y + i + 1 > 5:
-            break
-        if grid[y + i + 1][move - i - 1] == player:
-            counter += 1
-        else:
-            break
-    if counter >= 4:
-        return True, False
-
-    return False, False
-
-
 class Player:
     def __init__(self, name):
         self.name = name
@@ -148,12 +70,12 @@ class MinimaxPlayer(Player):
         else:
             move_scores = [1000] * 7
         for move in range(7):
-            win, invalid = check_win(player, board, move)
+            win, invalid = board.check_win(player, move)
             if invalid:
                 if maximize:
-                    move_scores[move] = -1000
+                    move_scores[move] = -1.01
                 else:
-                    move_scores[move] = 1000
+                    move_scores[move] = 1.01
             else:
                 if win:
                     if maximize:
@@ -182,10 +104,7 @@ class MinimaxPlayer(Player):
                                     return 0, move_scores
                     else:
                         new_board = copy.deepcopy(board)
-                        for i in range(len(new_board)):
-                            if new_board[len(new_board) - i - 1][move] == 0:
-                                new_board[len(new_board) - i - 1][move] = player
-                                break
+                        new_board.input_move(player, move)
                         result, _ = self.minimax(3 - player, new_board, depth - 1, not maximize, alpha, beta)
                         result = result * 0.9
                         move_scores[move] = result
@@ -204,16 +123,3 @@ class MinimaxPlayer(Player):
             return max(move_scores), move_scores
         else:
             return min(move_scores), move_scores
-
-
-if __name__ == "__main__":
-    grid = [[0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 2, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 0, 1, 0, 0, 0],
-            [0, 0, 2, 2, 0, 0, 0]
-            ]
-    player = MinimaxPlayer("Bob", 4)
-    player.send_state(1, grid)
-    print(player.get_move())
