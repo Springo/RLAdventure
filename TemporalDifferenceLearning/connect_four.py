@@ -118,9 +118,9 @@ if __name__ == "__main__":
     # Create players
     #player_1 = players.HumanPlayer("Melon")
     #player_1 = players.RandomPlayer("Bimbo")
-    player_1 = players.MinimaxPlayer("Min", 8)
+    player_1 = players.MinimaxPlayer("Min", 5)
     #player_2 = players.RandomPlayer("Bimbo")
-    player_2 = players.MinimaxPlayer("Max", 8)
+    player_2 = players.MinimaxPlayer("Max", 5)
 
     # Create texts
     game_text = "{} to move.".format(player_1.name)

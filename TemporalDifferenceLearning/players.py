@@ -34,10 +34,23 @@ class HumanPlayer(Player):
 class RandomPlayer(Player):
     def __init__(self, name):
         Player.__init__(self, name)
+        self.invalid = dict()
+        self.invalid[-1] = True
+        for i in range(7):
+            self.invalid[i] = False
 
     def get_move(self):
-        self.move = random.randint(0, 6)
+        self.move = -1
+        while self.invalid[self.move]:
+            self.move = random.randint(0, 6)
         return self.move
+
+    def send_state(self, player, board):
+        for move in range(7):
+            if board.heights[move] < 0:
+                self.invalid[move] = True
+            else:
+                self.invalid[move] = False
 
 
 class MinimaxPlayer(Player):
@@ -53,8 +66,6 @@ class MinimaxPlayer(Player):
 
     def get_move(self):
         best_move_score, move_scores = self.minimax(self.player, self.board, self.depth, True, -1000, 1000, force_all=True)
-        print(self.player)
-        print(move_scores)
 
         available_moves = []
         for move in range(7):

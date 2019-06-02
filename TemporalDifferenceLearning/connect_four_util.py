@@ -90,3 +90,14 @@ class ConnectFourBoard:
             if self.heights[i] >= 0:
                 return False
         return True
+
+    def print_board(self):
+        for row in self.grid:
+            for elem in row:
+                if elem == 0:
+                    print("| ", end="")
+                elif elem == 1:
+                    print("|#", end="")
+                elif elem == 2:
+                    print("|O", end="")
+            print("|")
