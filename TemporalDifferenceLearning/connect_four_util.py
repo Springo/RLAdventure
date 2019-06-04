@@ -112,7 +112,6 @@ class ConnectFourBoard:
 
 
 def save_to_file(filename, data):
-    with open(filename, 'a') as csv_file:
+    with open(filename, 'a', newline='') as csv_file:
         writer = csv.writer(csv_file)
-        for row in data:
-            writer.writerow(row)
+        writer.writerows(data)

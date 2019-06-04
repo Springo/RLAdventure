@@ -1,4 +1,4 @@
-from connect_four_util import ConnectFourBoard
+from connect_four_util import ConnectFourBoard, save_to_file
 import players
 
 
@@ -7,7 +7,7 @@ class ConnectFourSimulator:
         self.p1 = player_1
         self.p2 = player_2
 
-    def run(self, iters=1, verbose=False):
+    def run(self, iters=1, verbose=False, data_out=None):
         p1_wins = 0
         p2_wins = 0
         ties = 0
@@ -21,8 +21,11 @@ class ConnectFourSimulator:
             win_message = ""
             turn = 1
             move = -1
+            state_stack = []
 
             while not game_over:
+                state_stack.append(board.package_state())
+
                 if turn == 1:
                     self.p1.send_state(1, board)
                     move = self.p1.get_move()
@@ -62,11 +65,23 @@ class ConnectFourSimulator:
                 else:
                     print("Error: Received invalid move.")
                     exit()
+
             if verbose:
                 print()
                 print(win_message)
             else:
                 print("[{}/{}] {}".format(i + 1, iters, win_message))
+
+            if data_out is not None:
+                data = []
+                win_value = 1
+                while len(state_stack) > 0:
+                    state = state_stack.pop()
+                    state.append(win_value)
+                    data.append(state)
+                    win_value *= -0.9
+                save_to_file(data_out, data)
+
 
         print("=== Statistics ===")
         print("{} ({}%) wins by Player 1 ({})".format(p1_wins, 100.0 * p1_wins / iters, self.p1.name))
@@ -75,9 +90,9 @@ class ConnectFourSimulator:
 
 
 if __name__ == "__main__":
-    player_1 = players.MinimaxPlayer("Min", 2)
+    player_1 = players.MinimaxPlayer("Min", 4)
     #player_1 = players.RandomPlayer("Bimbo")
-    player_2 = players.MinimaxPlayer("Max", 2)
+    player_2 = players.MinimaxPlayer("Max", 4)
 
     gs = ConnectFourSimulator(player_1, player_2)
-    gs.run(1000, verbose=False)
+    gs.run(10, verbose=False, data_out="test.csv")
