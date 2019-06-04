@@ -1,3 +1,4 @@
+import csv
 
 
 class ConnectFourBoard:
@@ -101,3 +102,17 @@ class ConnectFourBoard:
                 elif elem == 2:
                     print("|O", end="")
             print("|")
+
+    def package_state(self):
+        output = []
+        for row in self.grid:
+            for elem in row:
+                output.append(elem)
+        return output
+
+
+def save_to_file(filename, data):
+    with open(filename, 'a') as csv_file:
+        writer = csv.writer(csv_file)
+        for row in data:
+            writer.writerow(row)
