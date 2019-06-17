@@ -27,7 +27,7 @@ class ConnectFourSimulator:
             state_stack = []
 
             while not game_over:
-                state_stack.append(board.package_state())
+                state_stack.append(board.package_state(turn))
 
                 if turn == 1:
                     self.p1.send_state(1, board)
@@ -100,11 +100,12 @@ if __name__ == "__main__":
     X = np.expand_dims(X, axis=1)
     X = torch.from_numpy(X).float()
     y = torch.from_numpy(y).float()
-    net.fit(X, y)
+    net.fit(X, y, batch_size=32)
 
-    player_1 = players.DeepMinimaxPlayer("Deep", net, 4)
+    player_2 = players.DeepMinimaxPlayer("Deep", net, 4)
     #player_1 = players.RandomPlayer("Bimbo")
-    player_2 = players.MinimaxPlayer("Max", 4)
+    player_1 = players.MinimaxPlayer("Max", 6)
+    #player_2 = players.MinimaxPlayer("Min", 4)
 
     gs = ConnectFourSimulator(player_1, player_2)
-    gs.run(10, verbose=False, data_out="test.csv")
+    gs.run(100, verbose=False, data_out="test.csv")

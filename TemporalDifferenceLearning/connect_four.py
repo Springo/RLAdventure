@@ -2,7 +2,10 @@ import sys
 import random
 import pygame
 import players
-from connect_four_util import ConnectFourBoard
+import numpy as np
+import torch
+import connect_four_util as util
+import connect_four_nets as nets
 
 pygame.init()
 
@@ -50,7 +53,7 @@ def display_text(Surface, text, coords, font="centurygothic", font_size=24, colo
 
 class Board:
     def __init__(self):
-        self.board = ConnectFourBoard()
+        self.board = util.ConnectFourBoard()
 
     def input_move(self, player, move):
         return self.board.input_move(player, move)
@@ -115,12 +118,22 @@ if __name__ == "__main__":
     board = Board()
     board_dim = [0, 100, screen_width, screen_height - 100]
 
+    # Create network
+    net = nets.Connect4Network()
+    data = util.read_from_file("test.csv")
+    X, y = util.split_features_labels(data)
+    X, y = util.shuffle_data(X, y)
+    X = np.expand_dims(X, axis=1)
+    X = torch.from_numpy(X).float()
+    y = torch.from_numpy(y).float()
+    net.fit(X, y)
+
     # Create players
-    #player_1 = players.HumanPlayer("Melon")
+    player_1 = players.HumanPlayer("Melon")
     #player_1 = players.RandomPlayer("Bimbo")
-    player_1 = players.MinimaxPlayer("Min", 5)
+    #player_1 = players.MinimaxPlayer("Max", 8)
     #player_2 = players.RandomPlayer("Bimbo")
-    player_2 = players.MinimaxPlayer("Max", 5)
+    player_2 = players.DeepMinimaxPlayer("Deep", net, 4)
 
     # Create texts
     game_text = "{} to move.".format(player_1.name)

@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import torch
 
 
 class ConnectFourBoard:
@@ -104,12 +105,37 @@ class ConnectFourBoard:
                     print("|O", end="")
             print("|")
 
-    def package_state(self):
+    def package_state(self, player):
         output = []
         for row in self.grid:
             for elem in row:
-                output.append(elem)
+                if elem == 0:
+                    output.append(0)
+                elif elem == player:
+                    output.append(1)
+                else:
+                    output.append(-1)
         return output
+
+
+def convert_board_for_net(grid, player):
+    new_grid = []
+    for i in range(len(grid)):
+        grid_row = []
+        for j in range(len(grid[i])):
+            elem = grid[i][j]
+            if elem == 0:
+                grid_row.append(0)
+            elif elem == player:
+                grid_row.append(1)
+            else:
+                grid_row.append(-1)
+        new_grid.append(grid_row)
+    torch_grid = np.matrix(new_grid).astype(int)
+    torch_grid = np.expand_dims(torch_grid, axis=0)
+    torch_grid = np.expand_dims(torch_grid, axis=0)
+    torch_grid = torch.from_numpy(torch_grid).float()
+    return torch_grid
 
 
 def save_to_file(filename, data):

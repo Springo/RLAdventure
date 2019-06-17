@@ -1,6 +1,7 @@
 import random
 import math
 import copy
+import connect_four_util as util
 import numpy as np
 import torch
 
@@ -68,6 +69,7 @@ class MinimaxPlayer(Player):
 
     def get_move(self):
         best_move_score, move_scores = self.minimax(self.player, self.board, self.depth, True, -1000, 1000, force_all=True)
+        #print("{}: {}".format(self.name, move_scores))
 
         available_moves = []
         for move in range(7):
@@ -75,6 +77,7 @@ class MinimaxPlayer(Player):
                 available_moves.append(move)
 
         choice = random.randint(0, len(available_moves) - 1)
+        #print("Move chosen: {}".format(available_moves[choice]))
         return available_moves[choice]
 
     def minimax(self, player, board, depth, maximize, alpha, beta, force_all=False):
@@ -152,6 +155,7 @@ class DeepMinimaxPlayer(Player):
 
     def get_move(self):
         best_move_score, move_scores = self.minimax(self.player, self.board, self.depth, True, -1000, 1000, force_all=True)
+        #print("{}: {}".format(self.name, move_scores))
 
         available_moves = []
         for move in range(7):
@@ -159,6 +163,7 @@ class DeepMinimaxPlayer(Player):
                 available_moves.append(move)
 
         choice = random.randint(0, len(available_moves) - 1)
+        #print("Move chosen: {}".format(available_moves[choice]))
         return available_moves[choice]
 
     def minimax(self, player, board, depth, maximize, alpha, beta, force_all=False):
@@ -189,10 +194,7 @@ class DeepMinimaxPlayer(Player):
                                 return -1, move_scores
                 else:
                     if depth == 0:
-                        torch_board = np.matrix(board.grid).astype(int)
-                        torch_board = np.expand_dims(torch_board, axis=0)
-                        torch_board = np.expand_dims(torch_board, axis=0)
-                        torch_board = torch.from_numpy(torch_board).float()
+                        torch_board = util.convert_board_for_net(board.grid, player)
                         score = self.net.predict(torch_board).data.numpy()[0][0]
                         move_scores[move] = score
                         if not force_all:
