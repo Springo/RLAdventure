@@ -1,3 +1,5 @@
+import numpy as np
+import torch
 import players
 import connect_four_util as util
 import connect_four_nets as nets
@@ -95,6 +97,9 @@ if __name__ == "__main__":
     data = util.read_from_file("test.csv")
     X, y = util.split_features_labels(data)
     X, y = util.shuffle_data(X, y)
+    X = np.expand_dims(X, axis=1)
+    X = torch.from_numpy(X).float()
+    y = torch.from_numpy(y).float()
     net.fit(X, y)
 
     player_1 = players.DeepMinimaxPlayer("Deep", net, 4)

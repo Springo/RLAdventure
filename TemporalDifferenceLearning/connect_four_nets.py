@@ -7,21 +7,18 @@ from torch.autograd import Variable
 
 
 class Connect4Network(torch.nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self):
         super(Connect4Network, self).__init__()
 
         self.conv1 = torch.nn.Conv2d(1, 8, kernel_size=3, stride=1, padding=1)
         self.pool1 = torch.nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.conv2 = torch.nn.Conv2d(8, 16, kernel_size=3, stride=1, padding=1)
-        self.pool2 = torch.nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.fc1 = torch.nn.Linear(672, 32)
+        self.fc1 = torch.nn.Linear(72, 32)
         self.fc2 = torch.nn.Linear(32, 1)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
         x = self.pool1(x)
-        x = F.relu(self.conv2(x))
-        x = self.pool2(x)
+        x = x.view(-1, 72)
         x = self.fc1(x)
         x = self.fc2(x)
 
@@ -46,7 +43,7 @@ class Connect4Network(torch.nn.Module):
 
             # Forward + Backward + Optimize
             optimizer.zero_grad()  # zero the gradient buffer
-            outputs = self(X)
+            outputs = self(X_var)
             loss = criterion(outputs, y_var)
             loss.backward()
             print("Iteration {}: {} loss".format(epoch + 1, loss.data))

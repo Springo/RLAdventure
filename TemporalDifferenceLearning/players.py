@@ -189,8 +189,11 @@ class DeepMinimaxPlayer(Player):
                                 return -1, move_scores
                 else:
                     if depth == 0:
-                        torch_board = torch.from_numpy(np.matrix(board))
-                        score = self.net.predict(torch_board)
+                        torch_board = np.matrix(board.grid).astype(int)
+                        torch_board = np.expand_dims(torch_board, axis=0)
+                        torch_board = np.expand_dims(torch_board, axis=0)
+                        torch_board = torch.from_numpy(torch_board).float()
+                        score = self.net.predict(torch_board).data.numpy()[0][0]
                         move_scores[move] = score
                         if not force_all:
                             if maximize:
