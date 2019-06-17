@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 
 
 class ConnectFourBoard:
@@ -115,3 +116,26 @@ def save_to_file(filename, data):
     with open(filename, 'a', newline='') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerows(data)
+
+
+def read_from_file(filename):
+    data = []
+    with open(filename, 'r') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',')
+        for row in reader:
+            data.append(row)
+    return np.matrix(data)
+
+
+def split_features_labels(data):
+    features = data[:, 0:-1].astype(int)
+    labels = np.squeeze(np.array(data[:, -1].astype(float)))
+    features = np.array(features).reshape((features.shape[0], 6, 7))
+    return features, labels
+
+
+if __name__ == "__main__":
+    data = read_from_file("test.csv")
+    X, y = split_features_labels(data)
+    print(X.shape)
+    print(y.shape)
