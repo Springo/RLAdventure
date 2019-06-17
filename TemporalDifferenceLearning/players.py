@@ -1,6 +1,8 @@
 import random
 import math
 import copy
+import numpy as np
+import torch
 
 
 class Player:
@@ -187,7 +189,8 @@ class DeepMinimaxPlayer(Player):
                                 return -1, move_scores
                 else:
                     if depth == 0:
-                        score = self.net.predict(board)
+                        torch_board = torch.from_numpy(np.matrix(board))
+                        score = self.net.predict(torch_board)
                         move_scores[move] = score
                         if not force_all:
                             if maximize:

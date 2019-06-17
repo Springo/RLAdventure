@@ -134,6 +134,11 @@ def split_features_labels(data):
     return features, labels
 
 
+def shuffle_data(X, y):
+    idx = np.random.permutation(X.shape[0])
+    return X[idx], y[idx]
+
+
 if __name__ == "__main__":
     data = read_from_file("test.csv")
     X, y = split_features_labels(data)

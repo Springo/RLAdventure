@@ -1,5 +1,6 @@
-from connect_four_util import ConnectFourBoard, save_to_file
 import players
+import connect_four_util as util
+import connect_four_nets as nets
 
 
 class ConnectFourSimulator:
@@ -16,7 +17,7 @@ class ConnectFourSimulator:
                 print("=== Iteration {} ===".format(i + 1))
 
             # Set up board
-            board = ConnectFourBoard()
+            board = util.ConnectFourBoard()
             game_over = False
             win_message = ""
             turn = 1
@@ -80,7 +81,7 @@ class ConnectFourSimulator:
                     state.append(win_value)
                     data.append(state)
                     win_value *= -0.9
-                save_to_file(data_out, data)
+                util.save_to_file(data_out, data)
 
 
         print("=== Statistics ===")
@@ -90,7 +91,13 @@ class ConnectFourSimulator:
 
 
 if __name__ == "__main__":
-    player_1 = players.MinimaxPlayer("Min", 4)
+    net = nets.Connect4Network()
+    data = util.read_from_file("test.csv")
+    X, y = util.split_features_labels(data)
+    X, y = util.shuffle_data(X, y)
+    net.fit(X, y)
+
+    player_1 = players.DeepMinimaxPlayer("Deep", net, 4)
     #player_1 = players.RandomPlayer("Bimbo")
     player_2 = players.MinimaxPlayer("Max", 4)
 
