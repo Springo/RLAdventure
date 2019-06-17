@@ -139,3 +139,4 @@ if __name__ == "__main__":
     X, y = split_features_labels(data)
     print(X.shape)
     print(y.shape)
+    print(y)
