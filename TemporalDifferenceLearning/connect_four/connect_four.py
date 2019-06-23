@@ -129,11 +129,11 @@ if __name__ == "__main__":
     net.fit(X, y)
 
     # Create players
-    player_1 = players.HumanPlayer("Melon")
+    player_1 = players.HumanPlayer("Eugene")
     #player_1 = players.RandomPlayer("Bimbo")
     #player_1 = players.MinimaxPlayer("Max", 8)
     #player_2 = players.RandomPlayer("Bimbo")
-    player_2 = players.DeepMinimaxPlayer("Deep", net, 4)
+    player_2 = players.DeepMinimaxPlayer("Susan", net, 4)
 
     # Create texts
     game_text = "{} to move.".format(player_1.name)

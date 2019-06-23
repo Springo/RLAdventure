@@ -24,6 +24,7 @@ class ConnectFourSimulator:
             win_message = ""
             turn = 1
             move = -1
+            tied = False
             state_stack = []
 
             while not game_over:
@@ -58,6 +59,7 @@ class ConnectFourSimulator:
                         elif tie:
                             game_over = True
                             win_message = "Draw."
+                            tied = True
                             ties += 1
                         else:
                             turn = 3 - turn
@@ -78,6 +80,8 @@ class ConnectFourSimulator:
             if data_out is not None:
                 data = []
                 win_value = 1
+                if tied:
+                    win_value = 0
                 while len(state_stack) > 0:
                     state = state_stack.pop()
                     state.append(win_value)
@@ -102,10 +106,11 @@ if __name__ == "__main__":
     y = torch.from_numpy(y).float()
     net.fit(X, y, batch_size=32)
 
-    player_2 = players.DeepMinimaxPlayer("Deep", net, 4)
-    #player_1 = players.RandomPlayer("Bimbo")
-    player_1 = players.MinimaxPlayer("Max", 6)
-    #player_2 = players.MinimaxPlayer("Min", 4)
+    #player_1 = players.DeepMinimaxPlayer("Susan", net, 4)
+    player_1 = players.RandomPlayer("Bimbo")
+    #player_1 = players.MinimaxPlayer("Max", 4)
+    #player_2 = players.MinimaxPlayer("Min", 6)
+    player_2 = players.DeepMinimaxPlayer("Susan", net, 4)
 
     gs = ConnectFourSimulator(player_1, player_2)
     gs.run(100, verbose=False, data_out="test.csv")

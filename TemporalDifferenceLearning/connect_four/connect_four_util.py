@@ -166,7 +166,7 @@ def shuffle_data(X, y):
 
 
 if __name__ == "__main__":
-    data = read_from_file("test.csv")
+    data = read_from_file("nn_data_1.csv")
     X, y = split_features_labels(data)
     print(X.shape)
     print(y.shape)
