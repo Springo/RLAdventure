@@ -1,15 +1,14 @@
+import time
 import numpy as np
 from PIL import ImageGrab
 import cv2
+import pyautogui
+from direct_keys import press_key, release_key
+
 
 def screen_record():
-    for i in range(20):
-        print("Iteration {}".format(i))
-        printscreen =  np.array(ImageGrab.grab(bbox=(0,40,1280,720)))
-        cv2.imshow('window',cv2.cvtColor(printscreen, cv2.COLOR_BGR2RGB))
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            cv2.destroyAllWindows()
-            break
+    screen = np.array(ImageGrab.grab(bbox=(0, 40, 1280, 720)))
+    return screen
 
 
 def process_img(image):
@@ -19,10 +18,24 @@ def process_img(image):
 
 
 if __name__ == "__main__":
-    while True:
-        screen = np.array(ImageGrab.grab(bbox=(0, 40, 800, 640)))
+    # define controls
+    key_up = 0xC8
+    key_down = 0xD0
+    key_left = 0xCB
+    key_right = 0xCD
+
+    for i in list(range(5))[::-1]:
+        print(i + 1)
+        time.sleep(1)
+    #while True:
+    for i in range(10):
+        screen = screen_record()
         new_screen = process_img(screen)
-        cv2.imshow('window', new_screen)
+        #cv2.imshow('window', new_screen)
+        press_key(key_down)
+        time.sleep(1)
+        release_key(key_down)
+        time.sleep(1)
         if cv2.waitKey(25) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
             break
