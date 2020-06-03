@@ -129,7 +129,7 @@ if __name__ == "__main__":
     net.fit(X, y)
 
     # Create players
-    player_1 = players.HumanPlayer("Eugene")
+    player_1 = players.HumanPlayer("Rachael")
     #player_1 = players.RandomPlayer("Bimbo")
     #player_1 = players.MinimaxPlayer("Max", 8)
     #player_2 = players.RandomPlayer("Bimbo")

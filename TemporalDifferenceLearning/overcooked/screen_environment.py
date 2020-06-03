@@ -24,18 +24,27 @@ if __name__ == "__main__":
     key_left = 0xCB
     key_right = 0xCD
 
+    key_ctrl = 0x1D
+
     for i in list(range(5))[::-1]:
         print(i + 1)
         time.sleep(1)
+
+    while True:
+        press_key(key_ctrl)
+        time.sleep(0.1)
+        release_key(key_ctrl)
+        time.sleep(0.4)
+
     #while True:
     for i in range(10):
         screen = screen_record()
         new_screen = process_img(screen)
         #cv2.imshow('window', new_screen)
         press_key(key_down)
-        time.sleep(1)
+        time.sleep(0.1)
         release_key(key_down)
-        time.sleep(1)
+        time.sleep(0.1)
         if cv2.waitKey(25) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
             break
